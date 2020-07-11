@@ -1,1 +1,1 @@
-Design minimum-cost bandwidth-demand-satisfaction FSO network.
+Design minimum-cost bandwidth-requirements-satisfaction FSO network.
