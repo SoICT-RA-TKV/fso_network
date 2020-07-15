@@ -1,0 +1,8 @@
+# BER limit
+0.001
+# Radius
+7.5
+# Number of wavelengths
+128
+# Capacity of HAP (max number of FSO)
+10
