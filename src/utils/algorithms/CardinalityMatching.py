@@ -5,10 +5,26 @@ Find maximum cardinality matchings in general undirected graphs.
 D. Eppstein, UC Irvine, September 6, 2003.
 """
 
-import sys
+import sys, os
 
-from src.utils.algorithms.UnionFind import UnionFind
-from src.utils.algorithms.Util import arbitrary_item
+def __init__():
+    cur_file_path = os.path.realpath(__file__) # Get current file abspath
+    cur_file_location_path = os.path.dirname(cur_file_path) # Get current file's location abspath
+    tmp_path = cur_file_location_path
+    rel_path_list = []
+    while True:
+        tmp_path, x = os.path.split(tmp_path)
+        if x == 'src':
+            break
+        rel_path_list.append('..')
+    rel_path = os.path.join(cur_file_location_path, *rel_path_list)
+    abs_path = os.path.abspath(rel_path)
+    sys.path.append(abs_path)
+
+__init__()
+
+from utils.algorithms.UnionFind import UnionFind
+from utils.algorithms.Util import arbitrary_item
 
 
 def blossomMatching(G, initialMatching=None):

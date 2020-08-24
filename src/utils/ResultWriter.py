@@ -1,5 +1,23 @@
-from src.utils.String import *
-from src.utils.Distance import *
+import sys, os
+
+def __init__():
+    cur_file_path = os.path.realpath(__file__) # Get current file abspath
+    cur_file_location_path = os.path.dirname(cur_file_path) # Get current file's location abspath
+    tmp_path = cur_file_location_path
+    rel_path_list = []
+    while True:
+        tmp_path, x = os.path.split(tmp_path)
+        if x == 'src':
+            break
+        rel_path_list.append('..')
+    rel_path = os.path.join(cur_file_location_path, *rel_path_list)
+    abs_path = os.path.abspath(rel_path)
+    sys.path.append(abs_path)
+
+__init__()
+
+from utils.String import *
+from utils.Distance import *
 
 def writeResult(fileName, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, flows):
     f = open(fileName, 'w')
@@ -58,18 +76,27 @@ def updateSynthesis(fileName, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDema
     res['# Demand (in Flow)'] = sum(sum(hapDemands))
     res['# Cluster'] = len(clusters)
     res['# HAP'] = len(HAPs)
-    res['# Used Link'] = len(usedLinks)
+    res['# Used Link'] = len(usedLinks) / 2
     res['# Used Edge'] = len(usedEgdes)
     res['# Remain Demand (in Flow)'] = res['# Demand (in Flow)'] - len(flows)
-    res['% Responsed'] = len(flows) / res['# Demand (in Flow)']
-    res['Mean Degree'] = len(usedLinks) * 2 / len(HAPs)
-    res['% Used Edge'] = len(usedEgdes) / (len(usedLinks) * 2 * W)
+    try:
+        res['% Responsed'] = len(flows) / res['# Demand (in Flow)']
+    except:
+        res['% Responsed'] = 1
+    res['Mean Degree'] = len(usedLinks) / len(HAPs)
+    try:
+        res['% Used Edge'] = len(usedEgdes) / (len(usedLinks) * W)
+    except:
+        res['% Used Edge'] = 1
     res['# FSO per Cluster'] = NFSO / len(clusters)
     res['# Demand per HAP'] = res['# Demand (in Flow)'] / len(clusters)
     res['Mean Link Length'] = 0
     for link in usedLinks:
         res['Mean Link Length'] += distance(HAPs[link[0]], HAPs[link[1]])
-    res['Mean Link Length'] /= len(usedLinks)
+    try:
+        res['Mean Link Length'] /= len(usedLinks)
+    except:
+        res['Mean Link Length'] = 0
     synthesis_file = open(fileName, 'a')
     # synthesis_file.write(joinany([file.split('_')[1], max(h.x for h in hap) - min(h.x for h in hap),
     #                               max(h.y for h in hap) - min(h.y for h in hap),

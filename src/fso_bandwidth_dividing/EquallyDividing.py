@@ -1,4 +1,3 @@
-
 import sys, os
 
 def __init__():
@@ -17,5 +16,18 @@ def __init__():
 
 __init__()
 
-def joinany(arr, sep):
-	return sep.join([str(x) for x in arr])
+from utils.DataReader import *
+
+class EquallyDividing:
+    def __init__(self, fsoDemands, HAPs, clusters, flows):
+        super().__init__()
+        print(fsoDemands)
+        print(HAPs)
+        print(clusters)
+        print(flows)
+
+if __name__ == '__main__':
+    file = '../../data/gfso/gfso_47_0.txt'
+    NFSO, FSOs, fsoDemands = readGroundFSOData(fileName=file)
+    print(NFSO, FSOs, fsoDemands)
+    # eq = EquallyDividing()

@@ -6,3 +6,5 @@
 128
 # Capacity of HAP (max number of FSO)
 10
+# Cloud radius
+10

@@ -215,3 +215,4 @@ fabric.properties
 # User ignore
 data/
 .idea/
+logs.txt

@@ -1,4 +1,3 @@
-
 import sys, os
 
 def __init__():
@@ -17,5 +16,16 @@ def __init__():
 
 __init__()
 
-def joinany(arr, sep):
-	return sep.join([str(x) for x in arr])
+import random
+
+def reduceByRatio(demands, ratio):
+    return (demands * (1 - ratio)).astype(int)
+
+def randomRemove(demands, ratio, seed=7):
+    random.seed(seed)
+    for i in range(demands.shape[0]):
+        for j in range(demands.shape[1]):
+            remove = random.random() < ratio
+            if remove:
+                demands[i, j] = 0
+    return demands

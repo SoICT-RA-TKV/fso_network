@@ -1,6 +1,25 @@
-from src.utils.Distance import *
+import sys, os
+
+def __init__():
+    cur_file_path = os.path.realpath(__file__) # Get current file abspath
+    cur_file_location_path = os.path.dirname(cur_file_path) # Get current file's location abspath
+    tmp_path = cur_file_location_path
+    rel_path_list = []
+    while True:
+        tmp_path, x = os.path.split(tmp_path)
+        if x == 'src':
+            break
+        rel_path_list.append('..')
+    rel_path = os.path.join(cur_file_location_path, *rel_path_list)
+    abs_path = os.path.abspath(rel_path)
+    sys.path.append(abs_path)
+
+__init__()
+
+from utils.Distance import *
 from copy import deepcopy
 from collections import namedtuple
+import numpy as np
 
 HAP = namedtuple('HAP', ['index', 'x', 'y'])
 FLOW = namedtuple('FLOW', ['wavelength', 'nodes'])
@@ -33,6 +52,9 @@ class NaiveRouting:
 	def forbid_link(self, iu, iv):
 		self.used_links.add((iu, iv))
 		self.used_links.add((iv, iu))
+		for iw in range(self.W):
+			self.used_edges.add(EDGE(iu, iv, iw))
+			self.used_edges.add(EDGE(iv, iu, iw))
 
 	def decrease_capacity(self, ih, c):
 		self.capacities[ih] -= 1
