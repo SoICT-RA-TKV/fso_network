@@ -29,4 +29,4 @@ def hap_ber(dist, berDict):
 	try:
 		return berDict[math.ceil(dist * 1e4)]
 	except:
-		return float('inf')
+		return 1

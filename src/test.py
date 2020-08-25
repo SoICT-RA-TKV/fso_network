@@ -20,6 +20,7 @@ from utils.DataReader import *
 from fso_clustering.GridBasedGreedyClustering import *
 from hap_routing.Naive import *
 from backup_pairing.BlossomBasedGreedy import BlossomBasedGreedy
+from fso_bandwidth_dividing.EquallyDividing import EquallyDividing
 from utils.ResultWriter import  *
 from utils.demandReduction import *
 from utils.String import *
@@ -136,7 +137,12 @@ for script in scripts:
         flows, usedEgdes, usedLinks = nr.solve()
         print('# Routing:', time.time() - start)
 
+        bwd = EquallyDividing(fsoDemands, HAPs, clusters, flows)
+        fsoFlows = bwd.solve()
+        # print(fsoFlows)
+        # sys.exit()
+
         resultFile = file.replace('gfso', resultDir)
-        writeResult(resultFile, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, flows)
-        updateSynthesis(synthesisFile, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, usedEgdes, flows)
+        writeResult(resultFile, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, flows, fsoFlows)
+        updateSynthesis(synthesisFile, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, usedEgdes, flows, fsoFlows)
         print('# Writing:', time.time() - start)

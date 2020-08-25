@@ -41,7 +41,6 @@ class NaiveRouting:
 		for i in range(self.NHAP_all):
 			for j in range(self.NHAP_all):
 				self.dists[i, j] = distance(hap[i], hap[j])
-				# print(dists[i, j])
 				self.bers[i, j] = hap_ber(self.dists[i, j], berDict)
 
 		self.flows = set()
@@ -68,9 +67,7 @@ class NaiveRouting:
 		
 		while True:
 			u = np.argmax([0 if i in response_list else sum(remains[i, :]) + sum(remains[:, i]) for i in range(NHAP_origin)])
-			# print('u:', u)
 			if (sum(remains[u, :]) + sum(remains[:, u]) == 0) or (u in response_list):
-				# print(response_list)
 				break
 			response_list.add(u)
 			V = [v for v in range(NHAP_origin) if (remains[u, v] + remains[v, u] > 0) and (capacities[v] > 1)]

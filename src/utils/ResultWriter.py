@@ -19,7 +19,7 @@ __init__()
 from utils.String import *
 from utils.Distance import *
 
-def writeResult(fileName, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, flows):
+def writeResult(fileName, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, flows, fsoFlows):
     f = open(fileName, 'w')
     f.write('# Number of ground FSO:\n')
     f.write(str(NFSO) + '\n')
@@ -61,9 +61,17 @@ def writeResult(fileName, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, ma
     for flow in flows:
         f.write(str(flow))
         f.write('\n')
+    f.write('# FSO Flows\n')
+    for i in range(NFSO):
+        print('#checkpoint - write result - start:', i)
+        for j in range(NFSO):
+            print('#checkpoint - write result - end:', j)
+            f.write(joinany([i, j], ' ') + ':\n')
+            for fsoFlow in fsoFlows[i][j]:
+                f.write(str(fsoFlows) + '\n')
     f.close()
 
-def updateSynthesis(fileName, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, usedEgdes, flows):
+def updateSynthesis(fileName, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, usedEgdes, flows, fsoFlows):
     keys = ['# FSO', 'Height' , 'Width' , '# Demand (in Flow)',
             '# Cluster', '# HAP', '# Used Link', '# Used Edge',
             '# Remain Demand (in Flow)', '% Responsed',
