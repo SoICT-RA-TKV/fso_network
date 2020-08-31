@@ -63,12 +63,10 @@ def writeResult(fileName, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, ma
         f.write('\n')
     f.write('# FSO Flows\n')
     for i in range(NFSO):
-        print('#checkpoint - write result - start:', i)
         for j in range(NFSO):
-            print('#checkpoint - write result - end:', j)
             f.write(joinany([i, j], ' ') + ':\n')
             for fsoFlow in fsoFlows[i][j]:
-                f.write(str(fsoFlows) + '\n')
+                f.write(str(fsoFlow) + '\n')
     f.close()
 
 def updateSynthesis(fileName, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, usedEgdes, flows, fsoFlows):

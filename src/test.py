@@ -21,6 +21,7 @@ from fso_clustering.GridBasedGreedyClustering import *
 from hap_routing.Naive import *
 from backup_pairing.BlossomBasedGreedy import BlossomBasedGreedy
 from fso_bandwidth_dividing.EquallyDividing import EquallyDividing
+from fso_bandwidth_dividing.SmallFirstDividing import SmallFirstDividing
 from utils.ResultWriter import  *
 from utils.demandReduction import *
 from utils.String import *
@@ -137,7 +138,7 @@ for script in scripts:
         flows, usedEgdes, usedLinks = nr.solve()
         print('# Routing:', time.time() - start)
 
-        bwd = EquallyDividing(fsoDemands, HAPs, clusters, flows)
+        bwd = SmallFirstDividing(fsoDemands, HAPs, clusters, flows)
         fsoFlows = bwd.solve()
         # print(fsoFlows)
         # sys.exit()

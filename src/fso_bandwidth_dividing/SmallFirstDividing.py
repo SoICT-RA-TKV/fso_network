@@ -28,7 +28,7 @@ def list_flow(flows, start, end):
             list_flows.append(flow)
     return list_flows
 
-class EquallyDividing:
+class SmallFirstDividing:
     def __init__(self, fsoDemands, HAPs, clusters, flows):
         super().__init__()
         self.fsoDemands, self.HAPs, self.clusters, self.flows = fsoDemands, HAPs, clusters, flows
@@ -50,35 +50,27 @@ class EquallyDividing:
                 else:
                     list_flows = list_flow(flows, ci[0].index, cj[0].index)
                     num_flows = len(list_flows)
-                    total_bw = 1024 * num_flows
-                    total_dm = 0
+                    list_demands = []
                     for fi in ci[1]:
                         for fj in cj[1]:
-                            total_dm += fsoDemands[fi.index][fj.index]
-                    ratio = 0
-                    if total_dm != 0:
-                        ratio = min(1, total_bw / total_dm)
-                    flow_idx = 0
+                            list_demands.append([fi.index, fj.index, fsoDemands[fi.index][fj.index]])
+                    list_demands.sort(key=lambda x : x[2])
                     remain_bw = 1024
-                    for fi in ci[1]:
-                        for fj in cj[1]:
-                            res_dm = fsoDemands[fi.index][fj.index] * ratio
-                            if res_dm == 0:
-                                continue
-                            try:
-                                flow = list_flows[flow_idx]
-                                fsoFlows[fi.index][fj.index].add((flow, min(res_dm, remain_bw)))
-                            except:
-                                pass
-                            if remain_bw < res_dm:
-                                res_dm -= remain_bw
-                                flow_idx += 1
-                                remain_bw = 1024
-                                try:
-                                    flow = list_flows[flow_idx]
-                                    fsoFlows[fi.index][fj.index].add((flow, min(res_dm, remain_bw)))
-                                except:
-                                    pass
+                    flow_idx = 0
+                    for demand in list_demands:
+                        if flow_idx >= num_flows:
+                            break
+                        flow = list_flows[flow_idx]
+                        fsoFlows[demand[0]][demand[1]].add((flow, min(demand[2], remain_bw)))
+                        if remain_bw < demand[2]:
+                            demand[2] -= remain_bw
+                            flow_idx += 1
+                            remain_bw = 1024
+                        if flow_idx >= num_flows:
+                            break
+                        remain_bw -= demand[2]
+                        flow = list_flows[flow_idx]
+                        fsoFlows[demand[0]][demand[1]].add((flow, min(demand[2], remain_bw)))
         count = 0
         for i in range(NFSO):
             for j in range(NFSO):
