@@ -44,6 +44,10 @@ def create_generalization_script(d, sb):
     script = dict()
     script['diameter'] = d
     script['radius'] = d / 2
+    if sb == 'co_du_phong':
+        script['backup'] = True
+    else:
+        script['backup'] = False
     script_name = ['d' + str(d), sb]
     return script, script_name
 
@@ -125,7 +129,8 @@ for script in scripts:
         n_origin_hap = len(HAPs)
         bbg = BlossomBasedGreedy(HAPs, Rc)
         matching = {}
-        HAPs, matching = bbg.solve()
+        if script.get('backup', False) == True:
+            HAPs, matching = bbg.solve()
         print('# Matching:', time.time() - start)
 
         nr = NaiveRouting(berDict, berThreshold, W, C, HAPs, hapDemands)
@@ -138,7 +143,7 @@ for script in scripts:
         flows, usedEgdes, usedLinks = nr.solve()
         print('# Routing:', time.time() - start)
 
-        bwd = SmallFirstDividing(fsoDemands, HAPs, clusters, flows)
+        bwd = EquallyDividing(fsoDemands, HAPs, clusters, flows)
         fsoFlows = bwd.solve()
         # print(fsoFlows)
         # sys.exit()
