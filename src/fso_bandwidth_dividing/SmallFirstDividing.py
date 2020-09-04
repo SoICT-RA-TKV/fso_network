@@ -46,7 +46,7 @@ class SmallFirstDividing:
                 if ci[0].index == cj[0].index:
                     for fi in ci[1]:
                         for fj in cj[1]:
-                            fsoFlows[fi.index][fj.index].add((FLOW(0, (ci[0].index,)), fsoDemands[fi.index][fj.index]))
+                            fsoFlows[fi.index][fj.index].add((FLOW('None', (ci[0].index,)), fsoDemands[fi.index][fj.index]))
                 else:
                     list_flows = list_flow(flows, ci[0].index, cj[0].index)
                     num_flows = len(list_flows)
@@ -66,6 +66,8 @@ class SmallFirstDividing:
                             demand[2] -= remain_bw
                             flow_idx += 1
                             remain_bw = 1024
+                        else:
+                            remain_bw -= demand[2]
                         if flow_idx >= num_flows:
                             break
                         remain_bw -= demand[2]
