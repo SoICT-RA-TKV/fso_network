@@ -46,7 +46,8 @@ class EquallyDividing:
                 if ci[0].index == cj[0].index:
                     for fi in ci[1]:
                         for fj in cj[1]:
-                            fsoFlows[fi.index][fj.index].add((FLOW('None', (ci[0].index,)), fsoDemands[fi.index][fj.index]))
+                            if fsoDemands[fi.index][fj.index] > 0:
+                                fsoFlows[fi.index][fj.index].add((FLOW('None', (ci[0].index,)), fsoDemands[fi.index][fj.index]))
                 else:
                     list_flows = list_flow(flows, ci[0].index, cj[0].index)
                     num_flows = len(list_flows)
@@ -83,6 +84,7 @@ class EquallyDividing:
                                     fsoFlows[fi.index][fj.index].add((flow, min(res_dm, remain_bw)))
                                 except:
                                     pass
+                                remain_bw -= res_dm
                             else:
                                 remain_bw -= res_dm
         count = 0

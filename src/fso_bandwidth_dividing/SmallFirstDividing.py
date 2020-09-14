@@ -46,7 +46,8 @@ class SmallFirstDividing:
                 if ci[0].index == cj[0].index:
                     for fi in ci[1]:
                         for fj in cj[1]:
-                            fsoFlows[fi.index][fj.index].add((FLOW('None', (ci[0].index,)), fsoDemands[fi.index][fj.index]))
+                            if fsoDemands[fi.index][fj.index] > 0:
+                                fsoFlows[fi.index][fj.index].add((FLOW('None', (ci[0].index,)), fsoDemands[fi.index][fj.index]))
                 else:
                     list_flows = list_flow(flows, ci[0].index, cj[0].index)
                     num_flows = len(list_flows)
@@ -60,19 +61,22 @@ class SmallFirstDividing:
                     for demand in list_demands:
                         if flow_idx >= num_flows:
                             break
+                        res_dm = demand[2]
+                        if res_dm == 0:
+                            continue
                         flow = list_flows[flow_idx]
-                        fsoFlows[demand[0]][demand[1]].add((flow, min(demand[2], remain_bw)))
-                        if remain_bw < demand[2]:
-                            demand[2] -= remain_bw
+                        fsoFlows[demand[0]][demand[1]].add((flow, min(res_dm, remain_bw)))
+                        if remain_bw < res_dm:
+                            res_dm -= remain_bw
                             flow_idx += 1
                             remain_bw = 1024
+                            if flow_idx >= num_flows:
+                                break
+                            flow = list_flows[flow_idx]
+                            fsoFlows[demand[0]][demand[1]].add((flow, min(res_dm, remain_bw)))
+                            remain_bw -= res_dm
                         else:
-                            remain_bw -= demand[2]
-                        if flow_idx >= num_flows:
-                            break
-                        remain_bw -= demand[2]
-                        flow = list_flows[flow_idx]
-                        fsoFlows[demand[0]][demand[1]].add((flow, min(demand[2], remain_bw)))
+                            remain_bw -= res_dm
         count = 0
         for i in range(NFSO):
             for j in range(NFSO):
