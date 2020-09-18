@@ -64,6 +64,8 @@ def writeResult(fileName, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, ma
     f.write('# FSO Flows\n')
     for i in range(NFSO):
         for j in range(NFSO):
+            if len(fsoFlows[i][j]) == 0:
+                continue
             f.write(joinany([i, j], ' ') + ':\n')
             for fsoFlow in fsoFlows[i][j]:
                 f.write(str(fsoFlow) + '\n')
