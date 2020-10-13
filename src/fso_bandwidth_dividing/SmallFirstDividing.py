@@ -65,7 +65,8 @@ class SmallFirstDividing:
                         if res_dm == 0:
                             continue
                         flow = list_flows[flow_idx]
-                        fsoFlows[demand[0]][demand[1]].add((flow, min(res_dm, remain_bw)))
+                        if remain_bw > 0:
+                            fsoFlows[demand[0]][demand[1]].add((flow, min(res_dm, remain_bw)))
                         if remain_bw < res_dm:
                             res_dm -= remain_bw
                             flow_idx += 1

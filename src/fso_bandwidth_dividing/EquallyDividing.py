@@ -70,7 +70,8 @@ class EquallyDividing:
                                 continue
                             try:
                                 flow = list_flows[flow_idx]
-                                fsoFlows[fi.index][fj.index].add((flow, min(res_dm, remain_bw)))
+                                if remain_bw > 0:
+                                    fsoFlows[fi.index][fj.index].add((flow, min(res_dm, remain_bw)))
                             except:
                                 pass
                             if remain_bw < res_dm:
