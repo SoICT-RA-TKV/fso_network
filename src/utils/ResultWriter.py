@@ -25,7 +25,7 @@ def writeResult(fileName, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, ma
     f.write(str(NFSO) + '\n')
     f.write('# Ground FSO coordinates:\n')
     for fso in FSOs:
-        f.write(joinany(fso[1:], ' ') + '\n')
+        f.write(joinany(fso[:], ' ') + '\n')
     f.write('# FSO demands in Mbps:\n')
     for i in range(NFSO):
         for j in range(NFSO):
@@ -34,6 +34,9 @@ def writeResult(fileName, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, ma
             f.write(joinany([i, j, fsoDemands[i, j]], ' ') + '\n')
     f.write('# Number of HAPs:\n')
     f.write(str(len(HAPs)) + '\n')
+    f.write('# HAP coordinates:\n')
+    for hap in HAPs:
+        f.write(joinany(hap[:], ' ') + '\n')
     f.write('# Number of clusters:\n')
     f.write(str(len(clusters)) + '\n')
     f.write('# Cluster\'s FSOs:\n')
