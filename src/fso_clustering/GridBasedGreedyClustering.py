@@ -68,7 +68,7 @@ class GridBasedGreedyClustering:
 						# Them cac FSO ma HAP moi bao phu vao cluster
 						k = j
 						while k < len(lines[i]) and (len(cluster) < W) and (lines[i][k][1] - xh <= R) and (lines[i][k] not in covered):
-							if distance(hap[1:], lines[i][k][1:]) <= R:
+							if distance(hap, lines[i][k]) <= R:
 								cluster.add(lines[i][k])
 								covered.add(lines[i][k])
 							k += 1
@@ -76,7 +76,7 @@ class GridBasedGreedyClustering:
 							for k in range(len(lines[i+1])):
 								if (lines[i+1][k][1] - xh > R) or (len(cluster) >= W):
 									break
-								if (distance(hap[1:], lines[i+1][k][1:]) <= R) and (lines[i+1][k] not in covered):
+								if (distance(hap, lines[i+1][k]) <= R) and (lines[i+1][k] not in covered):
 									cluster.add(lines[i+1][k])
 									covered.add(lines[i+1][k])
 						# Them HAP va cluster vao danh sach clusters

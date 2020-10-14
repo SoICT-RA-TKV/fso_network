@@ -216,3 +216,4 @@ fabric.properties
 data/
 .idea/
 logs.txt
+*.png

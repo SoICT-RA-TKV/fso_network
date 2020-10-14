@@ -1,4 +1,5 @@
 import sys, os
+import numpy as np
 
 def __init__():
     cur_file_path = os.path.realpath(__file__) # Get current file abspath
@@ -20,13 +21,16 @@ import numpy as np
 import math
 
 def distance(o1, o2):
-	try:
-		return np.linalg.norm([o1.x - o2.x, o1.y - o2.y])
-	except:
-		return -1
+    try:
+        return np.linalg.norm([o1.x - o2.x, o1.y - o2.y])
+    except:
+        print(o1)
+        print(o2)
+        raise Exception("Errorrrrrrrr")
+        return float('inf')
 
 def hap_ber(dist, berDict):
-	try:
-		return berDict[math.ceil(dist * 1e4)]
-	except:
-		return 1
+    try:
+        return berDict[math.ceil(dist * 1e4)]
+    except:
+        return 1

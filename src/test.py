@@ -25,6 +25,7 @@ from fso_bandwidth_dividing.SmallFirstDividing import SmallFirstDividing
 from utils.ResultWriter import  *
 from utils.demandReduction import *
 from utils.String import *
+from visualization.visualizer import *
 import time
 
 berDict, resolution = readBERDictionary(fileName='../config/ber.txt')
@@ -152,3 +153,14 @@ for script in scripts:
         writeResult(resultFile, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, flows, fsoFlows)
         updateSynthesis(synthesisFile, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, usedEgdes, flows, fsoFlows)
         print('# Writing:', time.time() - start)
+
+        xmin = min([hap.x for hap in HAPs]) - R * 1.2
+        xmax = max([hap.x for hap in HAPs]) + R * 1.2
+        ymin = min([hap.y for hap in HAPs]) - R * 1.2
+        ymax = max([hap.y for hap in HAPs]) + R * 1.2
+        axes = [xmin, xmax, ymin, ymax]
+
+        # visualizeGroundFSO(resultFile.replace('.txt', '_gfso.png'), FSOs, *axes)
+        # visualizeClusters(resultFile.replace('.txt', '_clusters.png'), clusters, FSOs, HAPs, R, *axes)
+        # visualizeHAP(resultFile.replace('.txt', '_hap.png'), HAPs, clusters, *axes)
+        # visualizeHAPTopology(resultFile.replace('.txt', '_haptopo.png'), HAPs, clusters, matching, usedLinks, *axes)
