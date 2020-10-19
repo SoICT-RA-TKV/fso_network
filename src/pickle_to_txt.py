@@ -1,5 +1,5 @@
 import sys, os
-from utils.synthesisKeys import readSynthesisKeys
+import pickle
 
 def __init__():
     cur_file_path = os.path.realpath(__file__) # Get current file abspath
@@ -85,8 +85,6 @@ def generate_scripts():
 scripts = generate_scripts()
 print('# Number of scripts:', len(scripts))
 
-keys = readSynthesisKeys()
-
 for script in scripts:
     print('\n------------------------------------\n')
     synthesisFile = script.get('synthesis_path', './synthesis.csv')
@@ -99,56 +97,20 @@ for script in scripts:
         os.mkdir('../data/' + resultDir)
     except:
         pass
-    try:
-        os.mkdir('../data/synthesis')
-    except:
-        pass
-    sf = open(synthesisFile, 'w')
-    sf.write(','.join(keys) + '\n')
-    sf.close()
     files = os.listdir(dir)
     files = [dir + file for file in files]
 
     for file in files:
         print('\n')
         print('# Data', file + ':')
-        start = time.time()
-        NFSO, FSOs, fsoDemands = readGroundFSOData(fileName=file)
-        if script.get('reduce'):
-            fsoDemands = reduceByRatio(fsoDemands, ratio)
-        if script.get('remove'):
-            fsoDemands = randomRemove(fsoDemands, ratio)
+
         R = _R
         if 'radius' in script:
             R = script['radius']
-        print('# Reading time:', time.time() - start)
-
-        gbgc = GridBasedGreedyClustering(FSOs, R, W, fsoDemands, 1024)
-        clusters, hapDemands = gbgc.solve()
-        print('# Clustering:', time.time() - start)
-
-        HAPs = [cluster[0] for cluster in clusters]
-        n_origin_hap = len(HAPs)
-        bbg = BlossomBasedGreedy(HAPs, Rc)
-        matching = {}
-        if script.get('backup', False) == True:
-            HAPs, matching = bbg.solve()
-        print('# Matching:', time.time() - start)
-
-        nr = NaiveRouting(berDict, berThreshold, W, C, HAPs, hapDemands)
-        for m in matching:
-            nr.forbid_link(m, matching[m])
-        for ih in range(len(HAPs)):
-            nr.decrease_capacity(ih, 1)
-        for ih in range(n_origin_hap):
-            nr.decrease_capacity(ih, 1)
-        flows, usedEdges, usedLinks = nr.solve()
-        print('# Routing:', time.time() - start)
-
-        bwd = SmallFirstDividing(fsoDemands, HAPs, clusters, flows)
-        fsoFlows = bwd.solve()
 
         resultFile = file.replace('gfso', resultDir)
+
+        with open(resultFile.replace('.txt', '.pickle'), 'rb') as f:
+            W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedEdges, usedLinks, flows, fsoFlows = pickle.load(f)
+
         writeResult(resultFile, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedEdges, usedLinks, flows, fsoFlows)
-        updateSynthesis(synthesisFile, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedEdges, usedLinks, flows, fsoFlows)
-        print('# Writing:', time.time() - start)

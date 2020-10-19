@@ -1,4 +1,5 @@
 import sys, os
+from .synthesisKeys import readSynthesisKeys
 
 def __init__():
     cur_file_path = os.path.realpath(__file__) # Get current file abspath
@@ -19,7 +20,7 @@ __init__()
 from utils.String import *
 from utils.Distance import *
 
-def writeResult(fileName, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, flows, fsoFlows):
+def writeResult(fileName, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedEdges, usedLinks, flows, fsoFlows):
     f = open(fileName, 'w')
     f.write('# Number of ground FSO:\n')
     f.write(str(NFSO) + '\n')
@@ -47,6 +48,12 @@ def writeResult(fileName, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, ma
         for fso in clusters[i][1]:
             f.write(str(fso.index) + ' ')
         f.write('\n')
+    f.write('# HAP - ground FSO matching:\n')
+    f.write('# First number is HAP\'s id\n')
+    f.write('# Second number is ground FSO\'s id\n')
+    for i in range(len(clusters)):
+        for fso in clusters[i][1]:
+            f.write(str(clusters[i][0].index) + ' ' + str(fso.index) + '\n')
     f.write('# HAP demands in number of flows:\n')
     for i in range(hapDemands.shape[0]):
         for j in range(hapDemands.shape[1]):
@@ -74,29 +81,42 @@ def writeResult(fileName, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, ma
                 f.write(str(fsoFlow) + '\n')
     f.close()
 
-def updateSynthesis(fileName, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedLinks, usedEgdes, flows, fsoFlows):
-    keys = ['# FSO', 'Height' , 'Width' , '# Demand (in Flow)',
-            '# Cluster', '# HAP', '# Used Link', '# Used Edge',
-            '# Remain Demand (in Flow)', '% Responsed',
-            'Mean Degree', '% Used Edge', '# FSO per Cluster',
-            '# Demand per HAP', 'Mean Link Length']
+def updateSynthesis(fileName, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedEdges, usedLinks, flows, fsoFlows):
+    keys = readSynthesisKeys()
     res = dict()
     res['# FSO'] = NFSO
     res['Height'] = max([fso.x for fso in FSOs]) - min([fso.x for fso in FSOs])
     res['Width'] = max([fso.y for fso in FSOs]) - min([fso.y for fso in FSOs])
     res['# Demand (in Flow)'] = sum(sum(hapDemands))
+    res['Demand (in BW)'] = sum(sum(fsoDemands))
     res['# Cluster'] = len(clusters)
     res['# HAP'] = len(HAPs)
     res['# Used Link'] = len(usedLinks) / 2
-    res['# Used Edge'] = len(usedEgdes)
+    res['# Used Edge'] = len(usedEdges)
     res['# Remain Demand (in Flow)'] = res['# Demand (in Flow)'] - len(flows)
     try:
-        res['% Responsed'] = len(flows) / res['# Demand (in Flow)']
+        if res['# Demand (in Flow)'] == 0:
+            res['% Flows Responsed'] = 1
+        else:
+            res['% Flows Responsed'] = len(flows) / res['# Demand (in Flow)']
     except:
-        res['% Responsed'] = 1
+        res['% Flows Responsed'] = 'Error'
+    try:
+        totalBWDemand = res['Demand (in BW)']
+        responsedBW = 0
+        for i in range(NFSO):
+            for j in range(NFSO):
+                for fsoFlow in fsoFlows[i][j]:
+                    responsedBW += fsoFlow[1]
+        if totalBWDemand == 0:
+            res['% Bandwidth Responsed'] = 1
+        else:
+            res['% Bandwidth Responsed'] = responsedBW / totalBWDemand
+    except:
+        res['% Bandwidth Responsed'] = 'Error'
     res['Mean Degree'] = len(usedLinks) / len(HAPs)
     try:
-        res['% Used Edge'] = len(usedEgdes) / (len(usedLinks) * W)
+        res['% Used Edge'] = len(usedEdges) / (len(usedLinks) * W)
     except:
         res['% Used Edge'] = 1
     res['# FSO per Cluster'] = NFSO / len(clusters)
@@ -109,14 +129,6 @@ def updateSynthesis(fileName, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDema
     except:
         res['Mean Link Length'] = 0
     synthesis_file = open(fileName, 'a')
-    # synthesis_file.write(joinany([file.split('_')[1], max(h.x for h in hap) - min(h.x for h in hap),
-    #                               max(h.y for h in hap) - min(h.y for h in hap),
-    #                               sum(sum(hapDemands)), NHAP, NHAP_w, len(used_links), len(used_edges),
-    #                               sum(sum(remains)),
-    #                               1 - sum(sum(remains)) / sum(sum(hapDemands)), len(used_edges) / NHAP_w,
-    #                               len(used_edges) / (len(used_links) * 128),
-    #                               int(file.split('_')[1]) / NHAP, sum(sum(demands)) / NHAP,
-    #                               sum(sum(dists)) / (NHAP * NHAP)], ',') + '\n')
     for key in keys:
         if key not in res:
             res[key] = None

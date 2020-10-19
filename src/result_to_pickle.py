@@ -1,5 +1,5 @@
 import sys, os
-from utils.synthesisKeys import readSynthesisKeys
+import pickle
 
 def __init__():
     cur_file_path = os.path.realpath(__file__) # Get current file abspath
@@ -85,8 +85,6 @@ def generate_scripts():
 scripts = generate_scripts()
 print('# Number of scripts:', len(scripts))
 
-keys = readSynthesisKeys()
-
 for script in scripts:
     print('\n------------------------------------\n')
     synthesisFile = script.get('synthesis_path', './synthesis.csv')
@@ -99,13 +97,6 @@ for script in scripts:
         os.mkdir('../data/' + resultDir)
     except:
         pass
-    try:
-        os.mkdir('../data/synthesis')
-    except:
-        pass
-    sf = open(synthesisFile, 'w')
-    sf.write(','.join(keys) + '\n')
-    sf.close()
     files = os.listdir(dir)
     files = [dir + file for file in files]
 
@@ -149,6 +140,9 @@ for script in scripts:
         fsoFlows = bwd.solve()
 
         resultFile = file.replace('gfso', resultDir)
-        writeResult(resultFile, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedEdges, usedLinks, flows, fsoFlows)
-        updateSynthesis(synthesisFile, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedEdges, usedLinks, flows, fsoFlows)
+
+        with  open(resultFile.replace('.txt', '.pickle'), 'wb') as f:
+            pickle.dump([W, NFSO, FSOs, fsoDemands, HAPs, clusters,
+                hapDemands, matching, usedEdges, usedLinks, flows, fsoFlows],
+                f)
         print('# Writing:', time.time() - start)

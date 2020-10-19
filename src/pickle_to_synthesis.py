@@ -1,4 +1,5 @@
 import sys, os
+import pickle
 from utils.synthesisKeys import readSynthesisKeys
 
 def __init__():
@@ -112,43 +113,14 @@ for script in scripts:
     for file in files:
         print('\n')
         print('# Data', file + ':')
-        start = time.time()
-        NFSO, FSOs, fsoDemands = readGroundFSOData(fileName=file)
-        if script.get('reduce'):
-            fsoDemands = reduceByRatio(fsoDemands, ratio)
-        if script.get('remove'):
-            fsoDemands = randomRemove(fsoDemands, ratio)
+
         R = _R
         if 'radius' in script:
             R = script['radius']
-        print('# Reading time:', time.time() - start)
-
-        gbgc = GridBasedGreedyClustering(FSOs, R, W, fsoDemands, 1024)
-        clusters, hapDemands = gbgc.solve()
-        print('# Clustering:', time.time() - start)
-
-        HAPs = [cluster[0] for cluster in clusters]
-        n_origin_hap = len(HAPs)
-        bbg = BlossomBasedGreedy(HAPs, Rc)
-        matching = {}
-        if script.get('backup', False) == True:
-            HAPs, matching = bbg.solve()
-        print('# Matching:', time.time() - start)
-
-        nr = NaiveRouting(berDict, berThreshold, W, C, HAPs, hapDemands)
-        for m in matching:
-            nr.forbid_link(m, matching[m])
-        for ih in range(len(HAPs)):
-            nr.decrease_capacity(ih, 1)
-        for ih in range(n_origin_hap):
-            nr.decrease_capacity(ih, 1)
-        flows, usedEdges, usedLinks = nr.solve()
-        print('# Routing:', time.time() - start)
-
-        bwd = SmallFirstDividing(fsoDemands, HAPs, clusters, flows)
-        fsoFlows = bwd.solve()
 
         resultFile = file.replace('gfso', resultDir)
-        writeResult(resultFile, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedEdges, usedLinks, flows, fsoFlows)
+
+        with open(resultFile.replace('.txt', '.pickle'), 'rb') as f:
+            W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedEdges, usedLinks, flows, fsoFlows = pickle.load(f)
+
         updateSynthesis(synthesisFile, W, NFSO, FSOs, fsoDemands, HAPs, clusters, hapDemands, matching, usedEdges, usedLinks, flows, fsoFlows)
-        print('# Writing:', time.time() - start)
