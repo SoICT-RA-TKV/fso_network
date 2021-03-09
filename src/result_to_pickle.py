@@ -120,7 +120,7 @@ for script in scripts:
 
         HAPs = [cluster[0] for cluster in clusters]
         n_origin_hap = len(HAPs)
-        bbg = BlossomBasedGreedy(HAPs, Rc)
+        bbg = BlossomBasedGreedy(berDict, berThreshold, HAPs, Rc)
         matching = {}
         if script.get('backup', False) == True:
             HAPs, matching = bbg.solve()

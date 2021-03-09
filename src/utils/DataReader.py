@@ -84,6 +84,8 @@ def readBERDictionary(fileName):
 	return berDict, resolution
 
 def readGroundFSOData(fileName):
+	if (fileName.split('/')[-1][0:4] != 'gfso'):
+		return 0, [], []
 	data = open(fileName).read().split('\n')
 	ld = len(data)
 	i = 0
